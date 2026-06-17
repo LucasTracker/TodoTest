@@ -35,3 +35,22 @@ export function removeTodo(todos: Todo[], id: number): Todo[] {
   }
   return todos.filter((t) => t.id !== id);
 }
+
+export type StatusFilter = "all" | "pending" | "done";
+
+/** Retorna as tarefas que correspondem ao filtro de status. */
+export function filterTodos(todos: Todo[], filter: StatusFilter): Todo[] {
+  switch (filter) {
+    case "pending":
+      return todos.filter((t) => !t.done);
+    case "done":
+      return todos.filter((t) => t.done);
+    case "all":
+      return todos.slice();
+  }
+}
+
+/** Retorna um novo array sem as tarefas concluídas. */
+export function clearCompleted(todos: Todo[]): Todo[] {
+  return todos.filter((t) => !t.done);
+}
