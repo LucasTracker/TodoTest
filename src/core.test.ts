@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { nextId, addTodo, completeTodo, removeTodo } from "./core.js";
+import {
+  nextId,
+  addTodo,
+  completeTodo,
+  removeTodo,
+  filterTodos,
+  clearCompleted,
+} from "./core.js";
 import type { Todo } from "./types.js";
 
 function makeTodo(id: number, overrides: Partial<Todo> = {}): Todo {
@@ -85,5 +92,50 @@ describe("removeTodo", () => {
 
   it("lança erro se a tarefa não existir", () => {
     expect(() => removeTodo([makeTodo(1)], 99)).toThrow(/não encontrada/);
+  });
+});
+
+describe("filterTodos", () => {
+  const todos = [
+    makeTodo(1, { done: false }),
+    makeTodo(2, { done: true }),
+    makeTodo(3, { done: false }),
+  ];
+
+  it("retorna todas com 'all'", () => {
+    expect(filterTodos(todos, "all")).toHaveLength(3);
+  });
+
+  it("retorna apenas pendentes com 'pending'", () => {
+    const result = filterTodos(todos, "pending");
+    expect(result.map((t) => t.id)).toEqual([1, 3]);
+  });
+
+  it("retorna apenas concluídas com 'done'", () => {
+    const result = filterTodos(todos, "done");
+    expect(result.map((t) => t.id)).toEqual([2]);
+  });
+
+  it("não muta o array original", () => {
+    filterTodos(todos, "all");
+    expect(todos).toHaveLength(3);
+  });
+});
+
+describe("clearCompleted", () => {
+  it("remove apenas as tarefas concluídas", () => {
+    const todos = [
+      makeTodo(1, { done: true }),
+      makeTodo(2, { done: false }),
+      makeTodo(3, { done: true }),
+    ];
+    const result = clearCompleted(todos);
+    expect(result.map((t) => t.id)).toEqual([2]);
+  });
+
+  it("não muta o array original", () => {
+    const todos = [makeTodo(1, { done: true })];
+    clearCompleted(todos);
+    expect(todos).toHaveLength(1);
   });
 });

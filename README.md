@@ -29,10 +29,11 @@ npm run test:watch # modo watch
 
 ## Comandos
 
-| Comando         | Descrição                          |
-| --------------- | ---------------------------------- |
-| `add <título>`  | Adiciona uma nova tarefa           |
-| `list`          | Lista todas as tarefas             |
-| `done <id>`     | Marca uma tarefa como concluída    |
-| `remove <id>`   | Remove uma tarefa                  |
-| `help`          | Mostra a ajuda                     |
+| Comando                  | Descrição                                  |
+| ------------------------ | ------------------------------------------ |
+| `add <título>`           | Adiciona uma nova tarefa                   |
+| `list [--pending\|--done]` | Lista tarefas (opcionalmente filtradas)  |
+| `done <id>`              | Marca uma tarefa como concluída            |
+| `remove <id>`            | Remove uma tarefa                          |
+| `clear`                  | Remove todas as tarefas concluídas         |
+| `help`                   | Mostra a ajuda                             |

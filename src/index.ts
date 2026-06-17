@@ -13,16 +13,35 @@ function cmdAdd(title: string): void {
   }
 }
 
-function cmdList(): void {
-  const todos = loadTodos();
+function cmdList(flag: string): void {
+  let filter: core.StatusFilter = "all";
+  if (flag === "--pending") filter = "pending";
+  else if (flag === "--done") filter = "done";
+  else if (flag) {
+    console.error(`Erro: opção desconhecida para list: ${flag}`);
+    process.exit(1);
+  }
+
+  const todos = core.filterTodos(loadTodos(), filter);
   if (todos.length === 0) {
-    console.log("Nenhuma tarefa. Use 'add <título>' para criar uma.");
+    const msg =
+      filter === "all"
+        ? "Nenhuma tarefa. Use 'add <título>' para criar uma."
+        : `Nenhuma tarefa com status '${filter}'.`;
+    console.log(msg);
     return;
   }
   for (const t of todos) {
     const mark = t.done ? "[x]" : "[ ]";
     console.log(`${mark} #${t.id} ${t.title}`);
   }
+}
+
+function cmdClear(): void {
+  const before = loadTodos();
+  const after = core.clearCompleted(before);
+  saveTodos(after);
+  console.log(`Removidas ${before.length - after.length} tarefa(s) concluída(s).`);
 }
 
 function cmdDone(idArg: string): void {
@@ -53,11 +72,12 @@ function cmdRemove(idArg: string): void {
 
 function help(): void {
   console.log(`Todo List — uso:
-  add <título>   Adiciona uma nova tarefa
-  list           Lista todas as tarefas
-  done <id>      Marca uma tarefa como concluída
-  remove <id>    Remove uma tarefa
-  help           Mostra esta ajuda`);
+  add <título>       Adiciona uma nova tarefa
+  list [--pending|--done]  Lista tarefas (opcionalmente filtradas)
+  done <id>          Marca uma tarefa como concluída
+  remove <id>        Remove uma tarefa
+  clear              Remove todas as tarefas concluídas
+  help               Mostra esta ajuda`);
 }
 
 function main(): void {
@@ -69,13 +89,16 @@ function main(): void {
       cmdAdd(arg);
       break;
     case "list":
-      cmdList();
+      cmdList(arg);
       break;
     case "done":
       cmdDone(arg);
       break;
     case "remove":
       cmdRemove(arg);
+      break;
+    case "clear":
+      cmdClear();
       break;
     case "help":
     case undefined:
